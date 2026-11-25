@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { exigerProfil } from "@/lib/auth";
-import { BadgeStatut } from "@/components/ui";
+import { Avatar, BadgeStatut } from "@/components/ui";
 import { EspaceInfluenceur } from "../../nav";
 import { FormPostuler } from "./form";
 
@@ -15,7 +15,7 @@ type OffreDetail = {
   businesses: {
     categorie: string | null;
     site_web: string | null;
-    profiles: { nom: string; instagram: string | null; bio: string | null } | null;
+    profiles: { nom: string; instagram: string | null; bio: string | null; photo_url: string | null } | null;
   } | null;
 };
 
@@ -26,7 +26,7 @@ export default async function DetailOffre(props: PageProps<"/influenceur/offres/
   const [{ data: offre }, { data: candidature }] = await Promise.all([
     supabase
       .from("offres")
-      .select("id, titre, description, niche, ville, budget, businesses(categorie, site_web, profiles(nom, instagram, bio))")
+      .select("id, titre, description, niche, ville, budget, businesses(categorie, site_web, profiles(nom, instagram, bio, photo_url))")
       .eq("id", id)
       .single<OffreDetail>(),
     supabase.from("candidatures").select("statut").eq("offre_id", id).eq("influenceur_id", profil.id).maybeSingle(),
@@ -39,8 +39,13 @@ export default async function DetailOffre(props: PageProps<"/influenceur/offres/
       <Link href="/influenceur" className="text-[11px] text-or-fonce">← Toutes les offres</Link>
 
       <section className="carte mt-3 p-5">
-        <p className="label-or">{biz?.categorie ?? "Commerce"}</p>
-        <h1 className="mt-1 font-titre text-3xl leading-tight">{biz?.profiles?.nom}</h1>
+        <div className="flex items-center gap-3">
+          {biz?.profiles && <Avatar texte={biz.profiles.nom} photo={biz.profiles.photo_url} />}
+          <div className="min-w-0">
+            <p className="label-or">{biz?.categorie ?? "Commerce"}</p>
+            <h1 className="font-titre text-3xl leading-tight">{biz?.profiles?.nom}</h1>
+          </div>
+        </div>
         {biz?.profiles?.instagram && <p className="mt-1 text-xs text-muted">{biz.profiles.instagram}</p>}
 
         <div className="my-4 h-px bg-bordure" />

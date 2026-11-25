@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { Avatar, BadgeStatut, BottomNav, TopBar, formatAbonnes } from "@/components/ui";
+import { Avatar, BadgeStatut, BottomNav, BoutonWhatsApp, TopBar, formatAbonnes } from "@/components/ui";
+import type { createClient } from "@/lib/supabase/server";
 import { BoutonEnvoi } from "@/components/client";
 import { deciderCandidature } from "./actions";
 
@@ -10,19 +11,26 @@ const ITEMS = [
   { href: "/profil", icone: "👤", label: "Profil" },
 ];
 
-export function EspaceBusiness({ actif, children }: { actif: string; children: ReactNode }) {
+const ITEMS_ADMIN = [
+  { href: "/admin", icone: "🛡️", label: "Admin" },
+  { href: "/admin?statut=commerces", icone: "🏪", label: "Commerces" },
+  { href: "/profil", icone: "👤", label: "Profil" },
+];
+
+/** Cadre des pages business. `admin` : c'est Fz qui gère la page pour un commerce */
+export function EspaceBusiness({ actif, children, admin }: { actif: string; children: ReactNode; admin?: boolean }) {
   return (
     <>
-      <TopBar badge="Business" />
+      <TopBar badge={admin ? "Admin" : "Business"} />
       <main className="flex-1 px-4 pb-6 pt-3">{children}</main>
-      <BottomNav items={ITEMS} actif={actif} />
+      <BottomNav items={admin ? ITEMS_ADMIN : ITEMS} actif={actif} />
     </>
   );
 }
 
 /** Ce qu'on sélectionne pour afficher une candidature côté business */
 export const SELECT_CANDIDATURE =
-  "id, statut, message, created_at, offres(id, titre), influenceurs(id, niche, abonnes, profiles(nom, ville))";
+  "id, statut, message, created_at, offres(id, titre), influenceurs(id, niche, abonnes, profiles(nom, ville, photo_url))";
 
 export type CandidatureBiz = {
   id: string;
@@ -34,11 +42,24 @@ export type CandidatureBiz = {
     id: string;
     niche: string | null;
     abonnes: number | null;
-    profiles: { nom: string; ville: string | null } | null;
+    profiles: { nom: string; ville: string | null; photo_url: string | null } | null;
   } | null;
+  /** rempli seulement pour les candidatures acceptées */
+  whatsapp?: string | null;
 };
 
-export function CarteCandidature({ c, montrerOffre = true }: { c: CandidatureBiz; montrerOffre?: boolean }) {
+/** Ajoute le WhatsApp de l'influenceur aux candidatures acceptées (fonction protégée whatsapp_de) */
+export async function avecWhatsApp(supabase: Awaited<ReturnType<typeof createClient>>, cands: CandidatureBiz[]) {
+  return Promise.all(
+    cands.map(async (c) => {
+      if (c.statut !== "acceptee" || !c.influenceurs) return c;
+      const { data } = await supabase.rpc("whatsapp_de", { uid: c.influenceurs.id });
+      return { ...c, whatsapp: (data as string | null) ?? null };
+    }),
+  );
+}
+
+export function CarteCandidature({ c, montrerOffre = true, expediteur }: { c: CandidatureBiz; montrerOffre?: boolean; expediteur: string }) {
   const inf = c.influenceurs;
   const nom = inf?.profiles?.nom ?? "Influenceur";
   const meta = [inf?.niche, formatAbonnes(inf?.abonnes), inf?.profiles?.ville].filter((x) => x && x !== "—").join(" · ");
@@ -46,7 +67,7 @@ export function CarteCandidature({ c, montrerOffre = true }: { c: CandidatureBiz
   return (
     <div className="carte p-3">
       <div className="flex items-center gap-3">
-        <Avatar texte={nom} />
+        <Avatar texte={nom} photo={inf?.profiles?.photo_url} />
         <Link href={inf ? `/influenceurs/${inf.id}` : "#"} className="min-w-0 flex-1">
           <div className="truncate text-[13px] font-semibold">{nom}</div>
           <div className="truncate text-[10px] text-muted">{meta}</div>
@@ -62,6 +83,12 @@ export function CarteCandidature({ c, montrerOffre = true }: { c: CandidatureBiz
         )}
       </div>
       {c.message && <p className="mt-2 rounded-lg bg-ivoire px-3 py-2 text-[11px] italic text-encre/80">« {c.message} »</p>}
+      {c.statut === "acceptee" && (
+        <BoutonWhatsApp
+          numero={c.whatsapp}
+          message={`Bonjour ${nom}, c'est ${expediteur} (via MSN) pour notre collab « ${c.offres?.titre ?? ""} ». On organise ça ?`}
+        />
+      )}
     </div>
   );
 }

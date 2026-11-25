@@ -105,11 +105,34 @@ export function BadgeStatut({ statut }: { statut: string }) {
   );
 }
 
-export function Avatar({ texte }: { texte: string }) {
+export function Avatar({ texte, photo, taille = "md" }: { texte: string; photo?: string | null; taille?: "md" | "xl" }) {
+  const cls = taille === "xl" ? "h-20 w-20 rounded-2xl text-4xl" : "h-10 w-10 rounded-xl text-lg";
+  if (photo) {
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={photo} alt="" className={`${cls} shrink-0 border border-or/25 object-cover`} />;
+  }
   return (
-    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-or/25 bg-or/10 font-titre text-lg text-or-fonce">
+    <div className={`${cls} flex shrink-0 items-center justify-center border border-or/25 bg-or-clair font-titre text-or-fonce`}>
       {texte.slice(0, 1).toUpperCase()}
     </div>
+  );
+}
+
+/** Bouton « Contacter sur WhatsApp » (affiché seulement après une collab acceptée) */
+export function BoutonWhatsApp({ numero, message }: { numero: string | null | undefined; message: string }) {
+  if (!numero) return <p className="text-[10px] text-muted">Pas encore de WhatsApp renseigné : contact par email.</p>;
+  let n = numero.replace(/\D/g, "");
+  if (n.startsWith("00")) n = n.slice(2);
+  else if (n.startsWith("0")) n = "212" + n.slice(1); // 06… → +212 6…
+  return (
+    <a
+      href={`https://wa.me/${n}?text=${encodeURIComponent(message)}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-succes px-4 py-2.5 text-[11px] font-bold uppercase tracking-[1px] text-white"
+    >
+      Contacter sur WhatsApp
+    </a>
   );
 }
 

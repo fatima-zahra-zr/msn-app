@@ -52,6 +52,8 @@ export default function Inscription() {
         <Champ label="Mot de passe (8 caractères min.)" name="password" type="password" required />
         <Liste label="Ville" name="ville" options={VILLES} />
         <Champ label="Instagram (@compte)" name="instagram" placeholder="@" />
+        <Champ label="WhatsApp" name="whatsapp" type="tel" inputMode="tel" required placeholder="06 12 34 56 78" />
+        <p className="-mt-1 text-[10px] text-muted">Partagé uniquement quand une collab est acceptée.</p>
 
         {role === "influenceur" ? (
           <>

@@ -1,7 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
-import { majProfil } from "./actions";
+import { majPhoto, majProfil } from "./actions";
+import { Avatar } from "@/components/ui";
 import { BoutonEnvoi, MessageForm } from "@/components/client";
 import { CATEGORIES, NICHES, VILLES, type Role } from "@/lib/types";
 
@@ -16,6 +17,7 @@ export function FormProfil({ role, valeurs }: { role: Role; valeurs: Valeurs }) 
       <Champ label={role === "business" ? "Nom du commerce" : "Nom / pseudo"} name="nom" defaultValue={v("nom")} required />
       <Liste label="Ville" name="ville" options={VILLES} defaultValue={v("ville")} />
       <Champ label="Instagram" name="instagram" defaultValue={v("instagram")} placeholder="@" />
+      <Champ label="WhatsApp (partagé après une collab acceptée)" name="whatsapp" type="tel" inputMode="tel" defaultValue={v("whatsapp")} placeholder="06 12 34 56 78" />
 
       {role === "influenceur" && (
         <>
@@ -37,6 +39,23 @@ export function FormProfil({ role, valeurs }: { role: Role; valeurs: Valeurs }) 
 
       <BoutonEnvoi enCours="Enregistrement…">Enregistrer</BoutonEnvoi>
       <MessageForm etat={etat} />
+    </form>
+  );
+}
+
+export function FormPhoto({ nom, photo, role }: { nom: string; photo: string | null; role: Role }) {
+  const [etat, action] = useActionState(majPhoto, null);
+  return (
+    <form action={action} className="carte mb-3 flex items-center gap-4 p-4">
+      <Avatar texte={nom} photo={photo} taille="xl" />
+      <div className="min-w-0 flex-1 space-y-2">
+        <label className="block">
+          <span className="label-or">{role === "business" ? "Logo du commerce" : "Photo de profil"}</span>
+          <input name="photo" type="file" accept="image/jpeg,image/png,image/webp" required className="mt-1 block w-full text-[11px] text-muted file:mr-2 file:rounded-lg file:border-0 file:bg-bordure file:px-3 file:py-2 file:text-[11px] file:font-semibold file:text-encre" />
+        </label>
+        <BoutonEnvoi className="btn-secondaire w-full !py-2" enCours="Envoi…">Mettre à jour</BoutonEnvoi>
+        <MessageForm etat={etat} />
+      </div>
     </form>
   );
 }

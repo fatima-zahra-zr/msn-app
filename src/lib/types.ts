@@ -11,11 +11,13 @@ export type Profil = {
   ville: string | null;
   instagram: string | null;
   bio: string | null;
+  photo_url: string | null;
   created_at: string;
 };
 
 /** Colonnes lisibles d'un profil (l'email est protégé : utiliser la fonction email_de) */
-export const PROFIL_COLS = "id, role, statut, nom, ville, instagram, bio, created_at";
+export const PROFIL_COLS = "id, role, statut, nom, ville, instagram, bio, photo_url, created_at";
+// Le WhatsApp aussi est protégé : fonction SQL whatsapp_de (visible après une collab acceptée)
 
 export type Offre = {
   id: string;
