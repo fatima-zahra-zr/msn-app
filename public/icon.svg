@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#FAF7F0"/>
+  <rect x="236" y="96" width="40" height="40" transform="rotate(45 256 116)" fill="#B8960C"/>
+  <text x="256" y="330" text-anchor="middle" font-family="Georgia, serif" font-size="150" font-weight="300" letter-spacing="18" fill="#1C1A16">MSN</text>
+  <rect x="146" y="372" width="220" height="4" fill="#B8960C" opacity="0.6"/>
+</svg>
