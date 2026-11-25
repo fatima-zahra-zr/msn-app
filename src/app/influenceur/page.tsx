@@ -132,7 +132,7 @@ export default async function DashboardInfluenceur(props: PageProps<"/influenceu
 function Stat({ n, l }: { n: number | string; l: string }) {
   return (
     <div>
-      <div className="text-xl font-bold text-or">{n}</div>
+      <div className="text-xl font-bold text-or-fonce">{n}</div>
       <div className="text-[9px] text-muted">{l}</div>
     </div>
   );
@@ -143,7 +143,7 @@ function FiltreVille({ href, actif, label }: { href: string; actif: boolean; lab
     <Link
       href={href}
       className={`shrink-0 rounded-full px-3 py-1 text-[10px] ${
-        actif ? "border border-or bg-or-clair font-semibold text-or" : "border border-bordure text-muted"
+        actif ? "border border-or bg-or-clair font-semibold text-or-fonce" : "border border-bordure text-muted"
       }`}
     >
       {label}
@@ -156,7 +156,7 @@ function Filtre({ href, actif, label }: { href: string; actif: boolean; label: s
     <Link
       href={href}
       className={`shrink-0 rounded-full px-3.5 py-1.5 text-[10px] font-semibold uppercase tracking-[1px] ${
-        actif ? "bg-or text-white" : "border border-bordure bg-ivoire text-muted"
+        actif ? "bg-or-fonce text-white" : "border border-bordure bg-ivoire text-muted"
       }`}
     >
       {label}

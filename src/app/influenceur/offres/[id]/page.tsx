@@ -36,7 +36,7 @@ export default async function DetailOffre(props: PageProps<"/influenceur/offres/
 
   return (
     <EspaceInfluenceur actif="/influenceur">
-      <Link href="/influenceur" className="text-[11px] text-or">← Toutes les offres</Link>
+      <Link href="/influenceur" className="text-[11px] text-or-fonce">← Toutes les offres</Link>
 
       <section className="carte mt-3 p-5">
         <p className="label-or">{biz?.categorie ?? "Commerce"}</p>

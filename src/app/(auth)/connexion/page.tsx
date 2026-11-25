@@ -31,7 +31,7 @@ export default function Connexion() {
 
       <p className="mt-6 text-center text-[11px] text-muted">
         Pas encore de compte ?{" "}
-        <Link href="/inscription" className="border-b border-or/30 font-semibold text-or">
+        <Link href="/inscription" className="border-b border-or/30 font-semibold text-or-fonce">
           S&apos;inscrire →
         </Link>
       </p>

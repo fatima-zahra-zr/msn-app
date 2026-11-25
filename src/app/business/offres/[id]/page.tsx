@@ -23,7 +23,7 @@ export default async function OffreBusiness(props: PageProps<"/business/offres/[
 
   return (
     <EspaceBusiness actif="/business">
-      <Link href="/business" className="text-[11px] text-or">← Dashboard</Link>
+      <Link href="/business" className="text-[11px] text-or-fonce">← Dashboard</Link>
 
       <section className="carte mt-3 p-5">
         <div className="flex items-start justify-between gap-3">

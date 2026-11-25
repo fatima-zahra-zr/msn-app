@@ -34,7 +34,7 @@ export default async function FicheInfluenceur(props: PageProps<"/influenceurs/[
         <RetourArriere />
         <section className="carte mt-3 overflow-hidden">
           <div className="bg-gradient-to-b from-or-clair to-surface px-5 pb-4 pt-6 text-center">
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl border border-or/25 bg-or/10 font-titre text-4xl text-or">
+            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl border border-or/25 bg-or/10 font-titre text-4xl text-or-fonce">
               {p.nom.slice(0, 1).toUpperCase()}
             </div>
             <h1 className="mt-3 font-titre text-3xl">{p.nom}</h1>
@@ -45,11 +45,11 @@ export default async function FicheInfluenceur(props: PageProps<"/influenceurs/[
           </div>
           <div className="grid grid-cols-2 border-y border-bordure text-center">
             <div className="border-r border-bordure py-3">
-              <div className="text-xl font-bold text-or">{formatAbonnes(inf.abonnes)}</div>
+              <div className="text-xl font-bold text-or-fonce">{formatAbonnes(inf.abonnes)}</div>
               <div className="text-[9px] text-muted">Abonnés</div>
             </div>
             <div className="py-3">
-              <div className="text-xl font-bold text-or">{collabs?.length ?? 0}</div>
+              <div className="text-xl font-bold text-or-fonce">{collabs?.length ?? 0}</div>
               <div className="text-[9px] text-muted">Collabs MSN</div>
             </div>
           </div>

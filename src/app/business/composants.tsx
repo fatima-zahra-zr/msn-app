@@ -50,7 +50,7 @@ export function CarteCandidature({ c, montrerOffre = true }: { c: CandidatureBiz
         <Link href={inf ? `/influenceurs/${inf.id}` : "#"} className="min-w-0 flex-1">
           <div className="truncate text-[13px] font-semibold">{nom}</div>
           <div className="truncate text-[10px] text-muted">{meta}</div>
-          {montrerOffre && c.offres && <div className="truncate text-[10px] text-or">→ {c.offres.titre}</div>}
+          {montrerOffre && c.offres && <div className="truncate text-[10px] text-or-fonce">→ {c.offres.titre}</div>}
         </Link>
         {c.statut === "en_attente" ? (
           <div className="flex shrink-0 gap-1.5">

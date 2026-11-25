@@ -38,7 +38,7 @@ export default function Inscription() {
             }`}
           >
             <div className="text-lg">{r === "influenceur" ? "🎯" : "🏢"}</div>
-            <div className={`text-[9px] font-semibold uppercase tracking-[1px] ${role === r ? "text-or" : "text-muted"}`}>
+            <div className={`text-[9px] font-semibold uppercase tracking-[1px] ${role === r ? "text-or-fonce" : "text-muted"}`}>
               {r === "influenceur" ? "Influenceur" : "Business"}
             </div>
           </button>
@@ -71,7 +71,7 @@ export default function Inscription() {
 
       <p className="mt-6 text-center text-[11px] text-muted">
         Déjà inscrit ?{" "}
-        <Link href="/connexion" className="border-b border-or/30 font-semibold text-or">
+        <Link href="/connexion" className="border-b border-or/30 font-semibold text-or-fonce">
           Se connecter →
         </Link>
       </p>

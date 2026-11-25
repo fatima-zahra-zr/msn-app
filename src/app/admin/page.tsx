@@ -54,7 +54,7 @@ export default async function Admin(props: PageProps<"/admin">) {
               key={o.statut}
               href={o.statut === "en_attente" ? "/admin" : `/admin?statut=${o.statut}`}
               className={`rounded-full px-3.5 py-1.5 text-[10px] font-semibold uppercase tracking-[1px] ${
-                onglet === o.statut ? "bg-or text-white" : "border border-bordure bg-surface text-muted"
+                onglet === o.statut ? "bg-or-fonce text-white" : "border border-bordure bg-surface text-muted"
               }`}
             >
               {o.label} ({compte(o.statut)})

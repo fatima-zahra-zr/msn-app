@@ -16,9 +16,9 @@ export function LogoGrand() {
     <div className="py-6 text-center">
       <Ornement />
       <div className="mt-2 font-titre text-6xl font-light tracking-[10px] text-encre">MSN</div>
-      <div className="mt-1 text-[8px] font-medium uppercase tracking-[3.5px] text-or">Moroccan Social Network</div>
+      <div className="mt-1 text-[8px] font-medium uppercase tracking-[3.5px] text-or-fonce">Moroccan Social Network</div>
       <p className="mt-4 font-titre text-[15px] text-muted">La plateforme exclusive des créateurs marocains</p>
-      <p className="mt-1 text-[9px] uppercase tracking-[2px] text-or">Connect · Create · Collaborate</p>
+      <p className="mt-1 text-[9px] uppercase tracking-[2px] text-or-fonce">Connect · Create · Collaborate</p>
     </div>
   );
 }
@@ -37,11 +37,11 @@ export function TopBar({ badge, droite }: { badge?: string; droite?: ReactNode }
   return (
     <header className="sticky top-0 z-10 flex items-center justify-between border-b border-bordure-2 bg-surface px-5 py-3">
       <Link href="/" className="font-titre text-2xl font-light tracking-[4px]">
-        M<span className="text-or">S</span>N
+        M<span className="text-or-fonce">S</span>N
       </Link>
       <div className="flex items-center gap-2">
         {badge && (
-          <span className="rounded border border-or/25 bg-or/10 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[1.5px] text-or">
+          <span className="rounded border border-or/25 bg-or/10 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[1.5px] text-or-fonce">
             {badge}
           </span>
         )}
@@ -61,7 +61,7 @@ export function BottomNav({ items, actif }: { items: ItemNav[]; actif: string })
         return (
           <Link key={it.href} href={it.href} className="flex flex-col items-center gap-0.5 px-3">
             <span className="text-lg">{it.icone}</span>
-            <span className={`text-[9px] tracking-wide ${on ? "text-or" : "text-muted"}`}>{it.label}</span>
+            <span className={`text-[9px] tracking-wide ${on ? "text-or-fonce" : "text-muted"}`}>{it.label}</span>
             <span className={`h-1 w-1 rounded-full ${on ? "bg-or" : "bg-transparent"}`} />
           </Link>
         );
@@ -75,7 +75,7 @@ export function EnTeteSection({ titre, lien }: { titre: string; lien?: { href: s
     <div className="mb-2 flex items-center justify-between">
       <h2 className="titre-section">{titre}</h2>
       {lien && (
-        <Link href={lien.href} className="text-[10px] text-or">
+        <Link href={lien.href} className="text-[10px] text-or-fonce">
           {lien.texte}
         </Link>
       )}
@@ -91,7 +91,7 @@ const STATUTS: Record<string, { label: string; cls: string }> = {
   publiee: { label: "Publiée", cls: "bg-succes-bg text-succes" },
   brouillon: { label: "Brouillon", cls: "border border-bordure text-muted" },
   fermee: { label: "Fermée", cls: "bg-bordure text-muted" },
-  en_attente: { label: "En attente", cls: "bg-or/10 text-or" },
+  en_attente: { label: "En attente", cls: "bg-or/10 text-or-fonce" },
   acceptee: { label: "Acceptée", cls: "bg-succes-bg text-succes" },
   refusee: { label: "Refusée", cls: "bg-danger-bg text-danger" },
   valide: { label: "Validé", cls: "bg-succes-bg text-succes" },
@@ -107,7 +107,7 @@ export function BadgeStatut({ statut }: { statut: string }) {
 
 export function Avatar({ texte }: { texte: string }) {
   return (
-    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-or/25 bg-or/10 font-titre text-lg text-or">
+    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-or/25 bg-or/10 font-titre text-lg text-or-fonce">
       {texte.slice(0, 1).toUpperCase()}
     </div>
   );
@@ -116,7 +116,7 @@ export function Avatar({ texte }: { texte: string }) {
 export function Kpi({ valeur, label }: { valeur: number | string; label: string }) {
   return (
     <div className="carte flex-1 px-2 py-3 text-center">
-      <div className="text-2xl font-bold leading-none text-or">{valeur}</div>
+      <div className="text-2xl font-bold leading-none text-or-fonce">{valeur}</div>
       <div className="mt-1 text-[9px] tracking-wide text-muted">{label}</div>
     </div>
   );
