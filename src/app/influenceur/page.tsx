@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { exigerProfil } from "@/lib/auth";
-import { NICHES } from "@/lib/types";
+import { NICHES, VILLES } from "@/lib/types";
 import { EnTeteSection, Vide, formatAbonnes, iconeNiche } from "@/components/ui";
 import { EspaceInfluenceur } from "./nav";
 
@@ -15,8 +15,20 @@ type OffreListe = {
 
 export default async function DashboardInfluenceur(props: PageProps<"/influenceur">) {
   const { supabase, profil } = await exigerProfil(["influenceur"]);
-  const { niche } = await props.searchParams;
-  const filtre = typeof niche === "string" ? niche : undefined;
+  const params = await props.searchParams;
+  const filtre = typeof params.niche === "string" ? params.niche : undefined;
+  const ville = typeof params.ville === "string" ? params.ville : undefined;
+
+  // construit l'URL en gardant l'autre filtre actif
+  const lien = (f: { niche?: string; ville?: string }) => {
+    const q = new URLSearchParams();
+    if (f.niche) q.set("niche", f.niche);
+    if (f.ville) q.set("ville", f.ville);
+    const s = q.toString();
+    return s ? `/influenceur?${s}` : "/influenceur";
+  };
+  // ma ville en premier dans la liste
+  const villes = profil.ville ? [profil.ville, ...VILLES.filter((v) => v !== profil.ville)] : VILLES;
 
   let requete = supabase
     .from("offres")
@@ -24,6 +36,8 @@ export default async function DashboardInfluenceur(props: PageProps<"/influenceu
     .eq("statut", "publiee")
     .order("created_at", { ascending: false });
   if (filtre) requete = requete.ilike("niche", filtre);
+  // une offre sans ville est valable partout : on la garde
+  if (ville) requete = requete.or(`ville.is.null,ville.eq.${ville.replace(/[,()]/g, "")}`);
 
   const [{ data: offres }, { data: mesCandidatures }, { data: moi }] = await Promise.all([
     requete.returns<OffreListe[]>(),
@@ -48,17 +62,38 @@ export default async function DashboardInfluenceur(props: PageProps<"/influenceu
         </div>
       </section>
 
-      {/* Filtres par niche */}
-      <nav className="-mx-4 mt-4 flex gap-2 overflow-x-auto border-y border-bordure-2 bg-surface px-4 py-3">
-        <Filtre href="/influenceur" actif={!filtre} label="Tout" />
-        {NICHES.map((n) => (
-          <Filtre key={n} href={`/influenceur?niche=${encodeURIComponent(n)}`} actif={filtre === n} label={n} />
-        ))}
-      </nav>
+      {/* Filtres par niche et par ville */}
+      <div className="-mx-4 mt-4 border-y border-bordure-2 bg-surface">
+        <nav className="flex gap-2 overflow-x-auto px-4 pt-3">
+          <Filtre href={lien({ ville })} actif={!filtre} label="Tout" />
+          {NICHES.map((n) => (
+            <Filtre key={n} href={lien({ niche: n, ville })} actif={filtre === n} label={n} />
+          ))}
+        </nav>
+        <nav className="flex gap-2 overflow-x-auto px-4 pb-3 pt-2">
+          <FiltreVille href={lien({ niche: filtre })} actif={!ville} label="Toutes les villes" />
+          {villes.map((v) => (
+            <FiltreVille
+              key={v}
+              href={lien({ niche: filtre, ville: v })}
+              actif={ville === v}
+              label={v === profil.ville ? `📍 ${v} (ma ville)` : v}
+            />
+          ))}
+        </nav>
+      </div>
 
       <section className="mt-4">
         <EnTeteSection titre="Offres disponibles" />
-        {!offres?.length && <Vide texte="Pas encore d'offre ici. Reviens bientôt, de nouveaux commerces arrivent !" />}
+        {!offres?.length && (
+          <Vide
+            texte={
+              filtre || ville
+                ? "Aucune offre avec ces filtres pour le moment. Essaie une autre ville ou niche."
+                : "Pas encore d'offre ici. Reviens bientôt, de nouveaux commerces arrivent !"
+            }
+          />
+        )}
         <div className="space-y-2">
           {offres?.map((o, i) => (
             <Link
@@ -100,6 +135,19 @@ function Stat({ n, l }: { n: number | string; l: string }) {
       <div className="text-xl font-bold text-or">{n}</div>
       <div className="text-[9px] text-muted">{l}</div>
     </div>
+  );
+}
+
+function FiltreVille({ href, actif, label }: { href: string; actif: boolean; label: string }) {
+  return (
+    <Link
+      href={href}
+      className={`shrink-0 rounded-full px-3 py-1 text-[10px] ${
+        actif ? "border border-or bg-or-clair font-semibold text-or" : "border border-bordure text-muted"
+      }`}
+    >
+      {label}
+    </Link>
   );
 }
 
