@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { exigerProfil } from "@/lib/auth";
 import { BadgeStatut, EnTeteSection, Kpi, Vide } from "@/components/ui";
-import { CarteCandidature, EspaceBusiness, SELECT_CANDIDATURE, type CandidatureBiz } from "./composants";
+import { CarteCandidature, EspaceBusiness, SELECT_CANDIDATURE, avecWhatsApp, type CandidatureBiz } from "./composants";
 
 export default async function DashboardBusiness() {
   const { supabase, profil } = await exigerProfil(["business"]);
@@ -25,7 +25,8 @@ export default async function DashboardBusiness() {
 
   const actives = (offres ?? []).filter((o) => o.statut === "publiee").length;
   const enAttente = (candidatures ?? []).filter((c) => c.statut === "en_attente");
-  const enCours = (candidatures ?? []).filter((c) => c.statut === "acceptee").length;
+  const acceptees = await avecWhatsApp(supabase, (candidatures ?? []).filter((c) => c.statut === "acceptee"));
+  const enCours = acceptees.length;
 
   return (
     <EspaceBusiness actif="/business">
@@ -42,10 +43,21 @@ export default async function DashboardBusiness() {
         {!enAttente.length && <Vide texte="Aucune candidature en attente." />}
         <div className="space-y-2">
           {enAttente.map((c) => (
-            <CarteCandidature key={c.id} c={c} />
+            <CarteCandidature key={c.id} c={c} expediteur={profil.nom} />
           ))}
         </div>
       </section>
+
+      {acceptees.length > 0 && (
+        <section className="mb-5">
+          <EnTeteSection titre={`Collabs acceptées (${acceptees.length})`} />
+          <div className="space-y-2">
+            {acceptees.map((c) => (
+              <CarteCandidature key={c.id} c={c} expediteur={profil.nom} />
+            ))}
+          </div>
+        </section>
+      )}
 
       <section>
         <EnTeteSection titre="Mes offres" />

@@ -47,6 +47,7 @@ export async function sInscrire(_: EtatForm, form: FormData): Promise<EtatForm> 
         nom,
         ville: txt(form, "ville"),
         instagram: txt(form, "instagram"),
+        whatsapp: txt(form, "whatsapp"),
         niche: txt(form, "niche"),
         abonnes: txt(form, "abonnes"),
         categorie: txt(form, "categorie"),
@@ -79,4 +80,26 @@ export async function seDeconnecter() {
   const supabase = await createClient();
   await supabase.auth.signOut();
   redirect("/connexion");
+}
+
+export async function demanderNouveauMotDePasse(_: EtatForm, form: FormData): Promise<EtatForm> {
+  const email = txt(form, "email");
+  if (!email) return { erreur: "Indique ton email." };
+  const origine = (await headers()).get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL ?? "";
+  const supabase = await createClient();
+  await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${origine}/auth/callback?next=/nouveau-mot-de-passe`,
+  });
+  // même message que le compte existe ou non (on ne révèle pas qui est inscrit)
+  return { ok: "Si un compte existe avec cet email, tu vas recevoir un lien pour choisir un nouveau mot de passe. Ouvre-le sur ce même appareil." };
+}
+
+export async function changerMotDePasse(_: EtatForm, form: FormData): Promise<EtatForm> {
+  const password = String(form.get("password") ?? "");
+  if (password.length < 8) return { erreur: "Le mot de passe doit faire au moins 8 caractères." };
+  if (password !== String(form.get("confirmation") ?? "")) return { erreur: "Les deux mots de passe ne sont pas identiques." };
+  const supabase = await createClient();
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) return { erreur: "Le lien a expiré. Refais une demande de mot de passe oublié." };
+  redirect("/");
 }

@@ -14,6 +14,8 @@ const ONGLETS: { statut: StatutCompte; label: string }[] = [
 export default async function Admin(props: PageProps<"/admin">) {
   const { supabase } = await exigerProfil(["admin"]);
   const { statut: s } = await props.searchParams;
+  // onglet « Commerces » : tous les commerces validés, pour gérer leurs offres
+  if (s === "commerces") return <OngletCommerces />;
   const onglet: StatutCompte = s === "valide" || s === "refuse" ? s : "en_attente";
 
   const [{ data: comptes }, { data: tous }, { data: infs }, { data: bizs }, { count: nbOffres }] = await Promise.all([
@@ -48,7 +50,7 @@ export default async function Admin(props: PageProps<"/admin">) {
           <Kpi valeur={nbOffres ?? 0} label="Offres actives" />
         </div>
 
-        <nav className="mb-3 flex gap-2">
+        <nav className="mb-3 flex flex-wrap gap-2">
           {ONGLETS.map((o) => (
             <Link
               key={o.statut}
@@ -60,6 +62,9 @@ export default async function Admin(props: PageProps<"/admin">) {
               {o.label} ({compte(o.statut)})
             </Link>
           ))}
+          <Link href="/admin?statut=commerces" className="rounded-full border border-bordure bg-surface px-3.5 py-1.5 text-[10px] font-semibold uppercase tracking-[1px] text-muted">
+            Commerces
+          </Link>
         </nav>
 
         {!comptes?.length && <Vide texte="Rien ici pour le moment." />}
@@ -74,7 +79,7 @@ export default async function Admin(props: PageProps<"/admin">) {
             return (
               <div key={c.id} className="carte p-3">
                 <div className="flex items-start gap-3">
-                  <Avatar texte={c.nom} />
+                  <Avatar texte={c.nom} photo={c.photo_url} />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <span className="truncate text-[13px] font-semibold">{c.nom}</span>
@@ -100,13 +105,52 @@ export default async function Admin(props: PageProps<"/admin">) {
           })}
         </div>
       </main>
-      <BottomNav
-        items={[
-          { href: "/admin", icone: "🛡️", label: "Admin" },
-          { href: "/profil", icone: "👤", label: "Profil" },
-        ]}
-        actif="/admin"
-      />
+      <BottomNav items={NAV_ADMIN} actif="/admin" />
+    </>
+  );
+}
+
+const NAV_ADMIN = [
+  { href: "/admin", icone: "🛡️", label: "Admin" },
+  { href: "/admin?statut=commerces", icone: "🏪", label: "Commerces" },
+  { href: "/profil", icone: "👤", label: "Profil" },
+];
+
+async function OngletCommerces() {
+  const { supabase } = await exigerProfil(["admin"]);
+  const [{ data: commerces }, { data: bizs }, { data: offres }] = await Promise.all([
+    supabase.from("profiles").select(PROFIL_COLS).eq("role", "business").eq("statut", "valide").order("nom").returns<Profil[]>(),
+    supabase.from("businesses").select("id, categorie"),
+    supabase.from("offres").select("business_id, statut"),
+  ]);
+  const categorie = new Map((bizs ?? []).map((b) => [b.id, b.categorie]));
+
+  return (
+    <>
+      <TopBar badge="Admin" />
+      <main className="flex-1 px-4 pb-6 pt-3">
+        <Link href="/admin" className="text-[11px] text-or-fonce">← Espace admin</Link>
+        <h1 className="mb-1 mt-2 font-titre text-2xl">Commerces ({commerces?.length ?? 0})</h1>
+        <p className="mb-3 text-[11px] text-muted">Ajoute un commerce démarché et publie ses offres à sa place.</p>
+        <Link href="/admin/commerces/nouveau" className="btn-primaire mb-3 w-full">+ Ajouter un commerce</Link>
+        {!commerces?.length && <Vide texte="Aucun commerce validé pour l'instant." />}
+        <div className="space-y-2">
+          {commerces?.map((c) => {
+            const actives = (offres ?? []).filter((o) => o.business_id === c.id && o.statut === "publiee").length;
+            return (
+              <Link key={c.id} href={`/admin/commerces/${c.id}`} className="carte flex items-center gap-3 p-3">
+                <Avatar texte={c.nom} photo={c.photo_url} />
+                <div className="min-w-0 flex-1">
+                  <div className="truncate text-[13px] font-semibold">{c.nom}</div>
+                  <div className="truncate text-[10px] text-muted">{[categorie.get(c.id), c.ville].filter(Boolean).join(" · ")}</div>
+                </div>
+                <span className="text-[10px] text-muted">{actives} offre(s) active(s)</span>
+              </Link>
+            );
+          })}
+        </div>
+      </main>
+      <BottomNav items={NAV_ADMIN} actif="/admin?statut=commerces" />
     </>
   );
 }

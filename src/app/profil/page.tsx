@@ -1,7 +1,7 @@
 import { exigerProfil } from "@/lib/auth";
 import { BottomNav, TopBar } from "@/components/ui";
 import { seDeconnecter } from "../(auth)/actions";
-import { FormProfil } from "./form";
+import { FormPhoto, FormProfil } from "./form";
 
 const NAV = {
   influenceur: [
@@ -16,6 +16,7 @@ const NAV = {
   ],
   admin: [
     { href: "/admin", icone: "🛡️", label: "Admin" },
+    { href: "/admin?statut=commerces", icone: "🏪", label: "Commerces" },
     { href: "/profil", icone: "👤", label: "Profil" },
   ],
 };
@@ -32,13 +33,17 @@ export default async function Profil() {
     extra = data ?? {};
   }
 
+  // son propre WhatsApp (colonne protégée : lue via la fonction whatsapp_de)
+  const { data: whatsapp } = await supabase.rpc("whatsapp_de", { uid: profil.id });
+
   return (
     <>
       <TopBar badge={profil.role === "business" ? "Business" : profil.role === "admin" ? "Admin" : undefined} />
       <main className="flex-1 px-4 pb-6 pt-4">
         <h1 className="font-titre text-3xl">Mon profil</h1>
         <p className="mb-4 text-[11px] text-muted">Ces infos sont visibles par les {profil.role === "business" ? "influenceurs" : "commerces"} de MSN.</p>
-        <FormProfil role={profil.role} valeurs={{ ...profil, ...extra }} />
+        <FormPhoto nom={profil.nom} photo={profil.photo_url} role={profil.role} />
+        <FormProfil role={profil.role} valeurs={{ ...profil, ...extra, whatsapp }} />
         <form action={seDeconnecter} className="mt-6">
           <button className="btn-secondaire w-full">Se déconnecter</button>
         </form>

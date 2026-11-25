@@ -23,6 +23,9 @@ export default function Connexion() {
           <span className="label-or">Mot de passe</span>
           <input name="password" type="password" required autoComplete="current-password" className="champ mt-1" />
         </label>
+        <div className="text-right">
+          <Link href="/mot-de-passe-oublie" className="text-[11px] text-or-fonce">Mot de passe oublié ?</Link>
+        </div>
         <div className="pt-2">
           <BoutonEnvoi enCours="Connexion…">Se connecter</BoutonEnvoi>
         </div>

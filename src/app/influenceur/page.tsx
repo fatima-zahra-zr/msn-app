@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { exigerProfil } from "@/lib/auth";
 import { NICHES, VILLES } from "@/lib/types";
-import { EnTeteSection, Vide, formatAbonnes, iconeNiche } from "@/components/ui";
+import { Avatar, EnTeteSection, Vide, formatAbonnes, iconeNiche } from "@/components/ui";
 import { EspaceInfluenceur } from "./nav";
 
 type OffreListe = {
@@ -10,7 +10,7 @@ type OffreListe = {
   niche: string | null;
   ville: string | null;
   budget: string | null;
-  businesses: { categorie: string | null; profiles: { nom: string } | null } | null;
+  businesses: { categorie: string | null; profiles: { nom: string; photo_url: string | null } | null } | null;
 };
 
 export default async function DashboardInfluenceur(props: PageProps<"/influenceur">) {
@@ -32,7 +32,7 @@ export default async function DashboardInfluenceur(props: PageProps<"/influenceu
 
   let requete = supabase
     .from("offres")
-    .select("id, titre, niche, ville, budget, businesses(categorie, profiles(nom))")
+    .select("id, titre, niche, ville, budget, businesses(categorie, profiles(nom, photo_url))")
     .eq("statut", "publiee")
     .order("created_at", { ascending: false });
   if (filtre) requete = requete.ilike("niche", filtre);
@@ -101,9 +101,13 @@ export default async function DashboardInfluenceur(props: PageProps<"/influenceu
               href={`/influenceur/offres/${o.id}`}
               className={`carte relative flex items-center gap-3 overflow-hidden p-3 ${i === 0 ? "before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:bg-or" : ""}`}
             >
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-bordure bg-ivoire text-xl">
-                {iconeNiche(o.niche)}
-              </div>
+              {o.businesses?.profiles?.photo_url ? (
+                <Avatar texte={o.businesses.profiles.nom} photo={o.businesses.profiles.photo_url} />
+              ) : (
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-bordure bg-ivoire text-xl">
+                  {iconeNiche(o.niche)}
+                </div>
+              )}
               <div className="min-w-0 flex-1">
                 <div className="truncate text-[13px] font-semibold">{o.businesses?.profiles?.nom ?? "Commerce"}</div>
                 <div className="truncate text-[11px] text-muted">{o.titre}</div>
